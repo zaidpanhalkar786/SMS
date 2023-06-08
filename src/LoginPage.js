@@ -3,13 +3,15 @@ import { useState } from "react"
 import { Button, Divider, Form, Grid, Image, Message, Segment } from 'semantic-ui-react'
 import Adminfrontpage from "./Adminfrontpage";
 import axios from "axios";
+import EmployeePage from "./EmployeePage";
 
 function MyLoginPage() {
-    
+    const[errorMessage,setErrorMessage] = useState('')
     const [username,setUsername] = useState('')
     const [password,setPassword] = useState('')
     const [isloggedIn, setIsLoggedIn] =useState(false)
-    const [errorMessage,setErrorMessage] =useState('')
+    const [role, setRole] = useState('');
+   
 
     const handleUsernameChange = (e) => {
         setUsername(e.target.value);
@@ -19,31 +21,39 @@ function MyLoginPage() {
         setPassword(e.target.value);
         };
     const handlelogin = async() => {
-
+      
       try {
         const response = await axios.post('http://localhost:3001/signin', {
         email:username,
         password,
         });
-
-        const token = response.data.token;
+        console.log(response.data)
+        const {token, role} = response.data;
         
         if (token) {
         setIsLoggedIn(true)
         localStorage.setItem('token', token);
+        setRole(role); // Set the role in the state
         console.log('Login successful!');
       
         } else {
-        setErrorMessage('Invalid username or password');
+        setErrorMessage("Invalid email id or password");
         }
         } catch (error) {
-        setErrorMessage('An error occurred. Please try again later.');
+        setErrorMessage("Invalid email id or password");
         }
 
     }
     if (isloggedIn) {
-        return <Adminfrontpage />
-    }
+      if (role === '') {
+        
+        }else if (role === 'Admin') {
+          return <Adminfrontpage />;
+        } else {
+            return <EmployeePage />;
+        }
+       } 
+  
     return(
   <Grid textAlign='center' style={{ height: '100vh' }} verticalAlign='middle'>
     <Grid.Column style={{ maxWidth: 700 }}>
@@ -73,7 +83,11 @@ function MyLoginPage() {
           <Button color='purple' fluid size='massive' onClick={handlelogin}>
             Login
           </Button>
-        </Segment>
+          </Segment>
+          {errorMessage && <div
+          style={{fontSize:'1.5rem',color:'red',marginTop:'10px'}}
+          >{errorMessage}</div>}
+        
       </Form>
       <Message style={{fontSize: '20px'}}>
         New to us? <a href='/signup-page'>Sign Up</a>

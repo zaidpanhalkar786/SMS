@@ -1,16 +1,19 @@
-import React from "react";
+import { useEffect, useState } from 'react';
 import 'semantic-ui-css/semantic.min.css'
-import { Header, Segment,Image,Item, Search, Container, Divider, Grid, GridColumn} from 'semantic-ui-react';
+import { Header, Segment,Image,Divider} from 'semantic-ui-react';
+import axios from 'axios';
 
 function Adminfrontpage() {
+  
    return ( 
      <div>
        <div>
        <Segment size='huge' attached = 'top'> 
             <Image src='Accenture icon.png' size='small' />
+           
        </Segment> 
        <Segment attached> 
-       <Header as='h1'size='huge'>Hello Admin!</Header>
+       <Header as='h1'size='huge'>Hello !</Header>
        </Segment> 
        <Divider 
        style={{margin: '3rem 0', display:'inline-block'}}

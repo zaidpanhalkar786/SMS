@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Form, Button, Tab } from 'semantic-ui-react';
+import { Form, Button, Tab,Segment,Image,Header,Divider } from 'semantic-ui-react';
 
 const PrimarySkillForm = ({ onSave }) => {
 const [primarySkill, setPrimarySkill] = useState({
@@ -17,34 +17,40 @@ onSave(primarySkill);
 };
 
 return (
+
 <Tab.Pane>
+<Divider style={{margin: '1rem 0'}} hidden/>
 <Form>
 <Form.Group widths="equal">
 <Form.Input
-label="Skill Name"
+label={<label style={{ fontSize: '20px', marginBottom: '18px' }}>Skill Name</label>}
 placeholder="Skill Name"
 name="skillName"
 value={primarySkill.skillName}
 onChange={handlePrimarySkillChange}
+style={{ fontSize: '20px' }}
 required
 />
 <Form.Input
-label="Years of Experience"
+label={<label style={{ fontSize: '20px',marginBottom: '18px'}}>Years of Experience</label>}
 placeholder="Years of Experience"
 name="yearsOfExperience"
 value={primarySkill.yearsOfExperience}
 onChange={handlePrimarySkillChange}
+style={{ fontSize: '20px' }}
 required
 />
 <Form.Input
-label="Certification"
-placeholder="Certification"
+label={<label style={{ fontSize: '20px',marginBottom: '18px' }}>Certification</label>}
+placeholder="Certification Name"
 name="certification"
 value={primarySkill.certification}
 onChange={handlePrimarySkillChange}
+style={{ fontSize: '20px' }}
 />
 </Form.Group>
-<Button primary onClick={handleSave}>
+<Divider style={{margin: '1rem 0'}} hidden/>
+<Button color='purple' onClick={handleSave} size='big'>
 Save
 </Button>
 </Form>
@@ -84,27 +90,30 @@ const secondarySkillsForm = secondarySkills.map((skill, index) => (
 <Form key={index}>
 <Form.Group widths="equal">
 <Form.Input
-label="Skill Name"
+label={<label style={{ fontSize: '20px', marginBottom: '18px' }}>Skill Name</label>}
 placeholder="Skill Name"
 name="skillName"
 value={skill.skillName}
 onChange={(e, { value }) => handleSecondarySkillChange(index, 'skillName', value)}
 required
+style={{ fontSize: '20px' }}
 />
 <Form.Input
-label="Years of Experience"
+label={<label style={{ fontSize: '20px',marginBottom: '18px' }}>Years of Experience</label>}
 placeholder="Years of Experience"
 name="yearsOfExperience"
 value={skill.yearsOfExperience}
 onChange={(e, { value }) => handleSecondarySkillChange(index, 'yearsOfExperience', value)}
 required
+style={{ fontSize: '20px' }}
 />
 <Form.Input
-label="Certification"
+label={<label style={{ fontSize: '20px',marginBottom: '18px' }}>Certification</label>}
 placeholder="Certification"
 name="certification"
 value={skill.certification}
 onChange={(e, { value }) => handleSecondarySkillChange(index, 'certification', value)}
+style={{ fontSize: '20px' }}
 />
 <Button negative icon="trash" onClick={() => handleDeleteSecondarySkill(index)} disabled={index === 0}/>
 
@@ -113,12 +122,15 @@ onChange={(e, { value }) => handleSecondarySkillChange(index, 'certification', v
 ));
 
 return (
+
 <Tab.Pane>
+<Divider style={{margin: '1rem 0'}} hidden/>
 {secondarySkillsForm}
-<Button primary onClick={handleAddSecondarySkill} disabled={secondarySkills.length >= 10}>
+<Divider style={{margin: '1rem 0'}} hidden/>
+<Button size='big' color='purple' onClick={handleAddSecondarySkill} disabled={secondarySkills.length >= 10}>
 Add
 </Button>
-<Button primary onClick={handleSave}>
+<Button size='big' color='purple' onClick={handleSave}>
 Save
 </Button>
 </Tab.Pane>
@@ -138,16 +150,28 @@ console.log(data);
 
 const panes = [
 {
-menuItem: { content: <span style={{fontSize:'2.5rem',color: 'purple'}}>Primary Skill</span>},
+menuItem: { content: <span style={{fontSize:'2.2rem',color: 'purple'}}>Primary Skill</span>},
 render: () => <PrimarySkillForm onSave={handleSavePrimarySkill} />,
 },
 {
-menuItem: { content: <span style={{fontSize:'2.5rem',color: 'purple'}}>Secondary Skill</span>},
+menuItem: { content: <span style={{fontSize:'2.2rem',color: 'purple'}}>Secondary Skill</span>},
 render: () => <SecondarySkillForm onSave={handleSaveSecondarySkills} />,
 },
 ];
 
-return <Tab panes={panes} />;
+return (
+<div>
+    <Segment size='huge' attached = 'top'> 
+        <Image src='Accenture icon.png' size='small'/>
+        </Segment> 
+        <Segment size='large' attached> 
+        <Header as='h1'size='large'>Hello Employee!</Header>
+    </Segment> 
+    {/* <Divider style={{margin: '0rem 0', display:'inline-block'}}/> */}
+
+<Tab panes={panes} />
+
+</div>)
 };
 
 export default EmployeePage;

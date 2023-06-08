@@ -1,7 +1,8 @@
 import React from 'react'
 import './Adminskillcatalog.css'
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import { Table, Button, Form,Segment,Header,Input, Divider,Icon,Modal } from 'semantic-ui-react';
 function Adminskillcatalog() {
 const [skills, setSkills] = useState([]);
@@ -17,99 +18,139 @@ const navigate = useNavigate();
 const handleGoBack=() => {
   navigate('/admin-homepage')
 }
-const handleSave = () => {
-  const trimmedSkill = currentSkill.toLowerCase().trim();
-  
-  if (trimmedSkill === "" || currentDescription.trim() === "") {
-  alert ("Please enter all the details")
-  return;
-  }
-  const existingSkill = skills.find(
-  (skill) => skill.name.toLowerCase().trim() === trimmedSkill
-  );
-  
-  if (existingSkill) {
-  alert ("Skill exists")
-  return;
-  }
-  
-  const newSkill = {
-  name: currentSkill,
-  description: currentDescription,
-  };
-  
-  setSkills([...skills, newSkill]);
-  setCurrentSkill("");
-  setCurrentDescription("");
-  };
 
-  const handleUpdate = (skill) => {
+useEffect(() => {
+  fetchSkills();
+  }, []);
+  
+
+const fetchSkills = async () => {
+  try {
+  const response = await axios.get('http://localhost:3001/skills', {
+    headers: {
+    Authorization: `Bearer ${localStorage.getItem('token')}`,
+    },
+    });
+  setSkills(response.data);
+  } catch (error) {
+  console.log(error);
+  }
+  };
+    
+  const handleSave = async () => {
+    const trimmedSkill = currentSkill.toLowerCase().trim();
+    
+    if (trimmedSkill === '' || currentDescription.trim() === '') {
+    alert('Please enter all the details');
+    return;
+    }
+    
+    const existingSkill = skills.find(
+    (skill) => skill.name.toLowerCase().trim() === trimmedSkill
+    );
+    
+    if (existingSkill) {
+    alert('Skill exists');
+    return;
+    }
+    
+    const newSkill = {
+    name: currentSkill,
+    description: currentDescription,
+    };
+    
+    try {
+    await axios.post('http://localhost:3001/skills', newSkill, {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem('token')}`,
+    },
+    });
+    setCurrentSkill('');
+    setCurrentDescription('');
+    fetchSkills();
+    } catch (error) {
+    console.error('Error saving skill:', error);
+    }
+    };
+    
+    const handleUpdate = (skill) => {
     setCurrentSkill(skill.name);
     setCurrentDescription(skill.description);
     setShowUpdateButton(true);
     setSelectedSkillToUpdate({ ...skill });
     };
     
-    const handleUpdateSave = () => {
-      const trimmedSkill = currentSkill.toLowerCase().trim();
-      
-      if (trimmedSkill === "" || currentDescription.trim() === "") {
-      alert("Please enter all the details");
-      return;
-      }
-      
-      const existingSkill = skills.find(
-      (skill) =>
-      skill.name.toLowerCase().trim() === trimmedSkill &&
-      skill.name !== selectedSkillToUpdate.name
-      );
-      
-      if (existingSkill) {
-      alert("Skill already exists");
-      return;
-      }
-      
-      const updatedSkills = skills.map((skill) => {
-      if (skill.name === selectedSkillToUpdate.name) {
-      return {
-      name: currentSkill,
-      description: currentDescription,
-      };
-      }
-      return skill;
-      });
-      
-      setSkills(updatedSkills);
-      setCurrentSkill("");
-      setCurrentDescription("");
-      setShowUpdateButton(false);
-      setSelectedSkillToUpdate(null); // Reset the selected skill
-      };
+    const handleUpdateSave = async () => {
+    const trimmedSkill = currentSkill.toLowerCase().trim();
+    
+    if (trimmedSkill === '' || currentDescription.trim() === '') {
+    alert('Please enter all the details');
+    return;
+    }
+    
+    const existingSkill = skills.find(
+    (skill) =>
+    skill.name.toLowerCase().trim() === trimmedSkill &&
+    skill.name !== selectedSkillToUpdate.name
+    );
+    
+    if (existingSkill) {
+    alert('Skill already exists');
+    return;
+    }
+    
+    const updatedSkill = {
+    name: currentSkill,
+    description: currentDescription,
+    };
+    
+    try {
+    await axios.put(`http://localhost:3001/skills/${selectedSkillToUpdate._id}`, updatedSkill, {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem('token')}`,
+    },
+    });
+    setCurrentSkill('');
+    setCurrentDescription('');
+    setShowUpdateButton(false);
+    setSelectedSkillToUpdate(null);
+    fetchSkills();
+    } catch (error) {
+    console.error('Error updating skill:', error);
+    }
+    };
+    
     const handleDeleteConfirmation = (skill) => {
     setSelectedSkillToDelete(skill);
     setShowDeleteConfirmation(true);
     };
     
-    const handleDelete = () => {
-    const updatedSkills = skills.filter(
-    (skill) => skill.name !== selectedSkillToDelete.name
-    );
-    
-    setSkills(updatedSkills);
+    const handleDelete = async () => {
+    try {
+    await axios.delete(`http://localhost:3001/skills/${selectedSkillToDelete._id}`, {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem('token')}`,
+    },
+    });
     setShowDeleteConfirmation(false);
+    fetchSkills();
+    } catch (error) {
+    console.error('Error deleting skill:', error);
+    }
     };
+    
     const handleSearch = (e) => {
-      setSearchQuery(e.target.value);
-      };
-      
+    setSearchQuery(e.target.value);
+    };
+    
     const filteredSkills = skills.filter((skill) => {
     const { name, description } = skill;
     const normalizedQuery = searchQuery.toLowerCase().trim();
     return (
     name.toLowerCase().includes(normalizedQuery) ||
-    description.toLowerCase().includes(normalizedQuery)     
-     );
-      });
+    description.toLowerCase().includes(normalizedQuery)
+    );
+    });
   return (
   <div className='skillcatalog'>
       <Segment attached style={{borderColor: 'black'}}> 
@@ -158,7 +199,7 @@ const handleSave = () => {
    placeholder="Search by skill name"
    value={searchQuery}
    onChange={handleSearch}
-   style ={{width:"1000px", height:"50px"}}
+   style ={{width:"1000px", height:"50px", fontSize:'20px'}}
   />
   </div>
   <Table celled border='5' className='skilltable'>
@@ -175,19 +216,20 @@ const handleSave = () => {
              <Table.Cell style={{fontSize:'20px'}}>{skill.name}</Table.Cell>
              <Table.Cell style={{fontSize:'20px'}}>{skill.description}</Table.Cell>
              <Table.Cell>
-              <Icon name= 'edit' onClick={() => handleUpdate(skill)} />
-              <Icon name= 'trash' onClick={() => handleDeleteConfirmation(skill)} />
+              <Icon size='large'  name= 'edit' onClick={() => handleUpdate(skill)} />
+              <Icon size='large'  name= 'trash' onClick={() => handleDeleteConfirmation(skill)} />
              </Table.Cell>
            </Table.Row>
-       ))}
+       )
+       )}
        </Table.Body>
        </Table>
 
 
 <Modal
 open={showDeleteConfirmation}
-size="mini"
-dimmer="blurring"
+style={{width:'450px', fontSize:'20px'}}
+//dimmer="blurring"
 onClose={() => setShowDeleteConfirmation(false)}
 >
 <Modal.Header>Confirm Deletion</Modal.Header>
@@ -195,12 +237,13 @@ onClose={() => setShowDeleteConfirmation(false)}
 <p>Are you sure you want to delete this skill?</p>
 </Modal.Content>
 <Modal.Actions>
-<Button negative onClick={() => setShowDeleteConfirmation(false)}>
-No
-</Button>
-<Button positive onClick={handleDelete}>
+<Button color='purple' size='large'   onClick={handleDelete}>
 Yes
 </Button>
+<Button  size='large' onClick={() => setShowDeleteConfirmation(false)}>
+No
+</Button>
+
 </Modal.Actions>
 </Modal>
        </div>

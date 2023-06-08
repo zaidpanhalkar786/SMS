@@ -48,8 +48,10 @@ try {
     } catch (error) {
     if (error.response) {
     setErrorMessage(error.response.data.message);
+    alert("This email address is already registered")
     } else {
     setErrorMessage('An error occurred. Please try again later.');
+    alert("An error occurred. Please try again later.")
     }
     }
 };
