@@ -11,7 +11,7 @@ function MyLoginPage() {
     const [password,setPassword] = useState('')
     const [isloggedIn, setIsLoggedIn] =useState(false)
     const [role, setRole] = useState('');
-   
+    const [email, setEmail] = useState('');
 
     const handleUsernameChange = (e) => {
         setUsername(e.target.value);
@@ -28,11 +28,12 @@ function MyLoginPage() {
         password,
         });
         console.log(response.data)
-        const {token, role} = response.data;
+        const {token, role,email} = response.data;
         
         if (token) {
         setIsLoggedIn(true)
         localStorage.setItem('token', token);
+        localStorage.setItem('email', email);
         setRole(role); // Set the role in the state
         console.log('Login successful!');
       
@@ -48,9 +49,9 @@ function MyLoginPage() {
       if (role === '') {
         
         }else if (role === 'Admin') {
-          return <Adminfrontpage />;
+          return <Adminfrontpage  email={email}/>;
         } else {
-            return <EmployeePage />;
+            return <EmployeePage email={email}/>;
         }
        } 
   
