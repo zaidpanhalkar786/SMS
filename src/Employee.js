@@ -19,6 +19,7 @@ const PrimarySkillForm = ({ primarySkillsTable, setPrimarySkillsTable }) => {
 
   useEffect(() => {
     fetchSkills(); // Fetch skills on component mount
+    fetchEmployeeSkills();
   }, []);
 
   const fetchSkills = async () => {
@@ -34,6 +35,44 @@ const PrimarySkillForm = ({ primarySkillsTable, setPrimarySkillsTable }) => {
       console.error('Error fetching skills:', error);
     }
   };
+
+
+  const fetchEmployeeSkills = async () => {
+    try {
+      const response = await axios.get('http://localhost:3001/primaryskill',{
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+        },{
+      
+            email: localStorage.getItem('email')
+          }
+      ); // Fetch skills from the backend
+       const employeeSkills = response.data;
+       const primarySkills = employeeSkills.map(skill => ({
+        skillId: skill.skillId._id,
+        yearsOfExperience: skill.yearsOfExperience,
+        certification: skill.certification
+      }));
+      setPrimarySkillsTable(primarySkills)
+    } catch (error) {
+      console.error('Error fetching skills:', error);
+    }
+  };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
   const handleInputChange = (event, { name, value }) => {
@@ -294,6 +333,12 @@ const SecondarySkillForm = ({ secondarySkillsTable, setSecondarySkillsTable }) =
       console.error('Error fetching skills:', error);
     }
   };
+    
+
+
+
+
+
 
 
 
@@ -346,9 +391,31 @@ const SecondarySkillForm = ({ secondarySkillsTable, setSecondarySkillsTable }) =
       return;
     }  
 
+    //setSecondarySkillsTable((prevState) => [...prevState, secondarySkill]);
+    //setSecondarySkill({ skillId: '', yearsOfExperience: '', certification: ''});
+        try{
+
+          const token = localStorage.getItem('token');
+          const email = localStorage.getItem('email');
+        const response = await axios.post(
+          'http://localhost:3001/secondaryskill',
+          {
+                email : email,
+                secondarySkills: [secondarySkill],
+          },{
+            headers: {
+              Authorization: `Bearer ${token}`,
+            }
+          })
+        if (response.status === 200){
         setSecondarySkillsTable((prevState) => [...prevState, secondarySkill]);
-        setSecondarySkill({ skillId: '', yearsOfExperience: '', certification: ''});
-  };
+          setSecondarySkill({ skillId: '', yearsOfExperience: '', certification: ''});
+         }
+        }catch(error){
+          console.error('Error saving secondary skills:', error);
+        }
+  }
+
 
   const handleEditSecondarySkill = (index) => {
     const selectedSecondarySkill = secondarySkillsTable[index];
