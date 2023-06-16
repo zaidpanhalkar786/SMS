@@ -4,6 +4,7 @@ import { Button, Divider, Form, Grid, Image, Message, Segment } from 'semantic-u
 import Adminfrontpage from "./Adminfrontpage";
 import axios from "axios";
 import EmployeePage from "./EmployeePage";
+import Employee from "./Employee";
 
 function MyLoginPage() {
     const[errorMessage,setErrorMessage] = useState('')
@@ -51,7 +52,7 @@ function MyLoginPage() {
         }else if (role === 'Admin') {
           return <Adminfrontpage  email={email}/>;
         } else {
-            return <EmployeePage email={email}/>;
+            return <Employee email = {email} />
         }
        } 
   

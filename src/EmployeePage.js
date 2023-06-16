@@ -1,323 +1,334 @@
-//front end code
-
+// Import the necessary dependencies
 import React, { useState, useEffect } from 'react';
-import { Form, Button, Tab, Segment, Image, Header, Divider } from 'semantic-ui-react';
+import { Tab, Form, Input, Button, Table, Icon, Modal,Dropdown} from 'semantic-ui-react';
+import axios from 'axios';
 
-const PrimarySkillForm = ({ onSave, skillOptions }) => {
+const EmployeePage = () => {
   const [primarySkill, setPrimarySkill] = useState({
-    skillId: '', // Change skillName to skillId
-    yearsOfExperience: '',
-    certification: '',
+    skillId: '',
+    yearsOfExperience: '', 
+    certification: ''
   });
+  const [primaryTableData, setPrimaryTableData] = useState([]);
+  const [primarySelectedSkill, setPrimarySelectedSkill] = useState(null);
 
-  const handlePrimarySkillChange = (e, { name, value }) => {
+  const [secondarySkill, setSecondarySkill] = useState({
+    skillId: '',
+    yearsOfExperience: '', // Update the property name
+    certification: ''
+  });
+  const [secondaryTableData, setSecondaryTableData] = useState([]);
+  const [secondarySelectedSkill, setSecondarySelectedSkill] = useState(null);
+
+  const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
+  const [deleteConfirmationIndex, setDeleteConfirmationIndex] = useState(null);
+  const [alertMessage, setAlertMessage] = useState(null);
+  const [skills, setSkills] = useState([]);
+
+  useEffect(() => {
+    fetchSkills(); // Fetch skills on component mount
+  }, []);
+
+  const fetchSkills = async () => {
+    try {
+      const response = await axios.get('http://localhost:3001/skills', {
+        headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
+        email: localStorage.getItem('email')
+        },
+        }); // Fetch skills from the backend
+      setSkills(response.data);
+    } catch (error) {
+      console.error('Error fetching skills:', error);
+    }
+  };
+
+  const handlePrimaryInputChange = (e, { name, value }) => {
     setPrimarySkill({ ...primarySkill, [name]: value });
   };
 
-  ////
+  const handleSecondaryInputChange = (e, { name, value }) => {
+    setSecondarySkill({ ...secondarySkill, [name]: value });
+  };
 
-  const handleSave = async () => {
-    try {
-      const email = localStorage.getItem('email'); // Get email from local storage
-      const token = localStorage.getItem('token'); // Get authorization token from local storage
+  const handlePrimarySave = () => {
+    setPrimaryTableData([...primaryTableData, primarySkill]);
+    setPrimarySkill({ skillId: '', yearsOfExperience: '', certification: '' });
+  };
 
-      const response = await fetch('http://localhost:3001/primary', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
+  const handleSecondarySave = () => {
+    if (secondaryTableData.length >= 10) {
+      setAlertMessage('Up to 10 secondary skills can be added.');
+      return;
+    }
 
-        },
-        body: JSON.stringify({
-          email,
-          primarySkill: {
-            skillId: primarySkill.skillId, // Change skillName to skillId
-            yearsOfExperience: primarySkill.yearsOfExperience,
-            certification: primarySkill.certification,
-          },
-        }),
-      });
+    setSecondaryTableData([...secondaryTableData, secondarySkill]);
+    setSecondarySkill({ skillId: '', yearsOfExperience: '', certification: '' });
+  };
 
-      if (response.ok) {
-        onSave();
+  const handlePrimaryEdit = (index) => {
+    const skillToEdit = primaryTableData[index];
+    setPrimarySelectedSkill(skillToEdit);
+    setPrimarySkill(skillToEdit);
+  };
+
+  const handleSecondaryEdit = (index) => {
+    const skillToEdit = secondaryTableData[index];
+    setSecondarySelectedSkill(skillToEdit);
+    setSecondarySkill(skillToEdit);
+  };
+
+  const handlePrimaryUpdate = () => {
+    const updatedTableData = [...primaryTableData];
+    const skillIndex = updatedTableData.findIndex((skill) => skill === primarySelectedSkill);
+    updatedTableData[skillIndex] = primarySkill;
+    setPrimaryTableData(updatedTableData);
+    setPrimarySelectedSkill(null);
+    setPrimarySkill({ skillId: '', yearsOfExperience: '', certification: '' });
+  };
+
+  const handleSecondaryUpdate = () => {
+    const updatedTableData = [...secondaryTableData];
+    const skillIndex = updatedTableData.findIndex((skill) => skill === secondarySelectedSkill);
+    updatedTableData[skillIndex] = secondarySkill;
+    setSecondaryTableData(updatedTableData);
+    setSecondarySelectedSkill(null);
+    setSecondarySkill({ skillId: '', yearsOfExperience: '', certification: '' });
+  };
+
+  const handlePrimaryDelete = (index) => {
+    setDeleteConfirmationOpen(true);
+    setDeleteConfirmationIndex(index);
+  };
+
+  const handleSecondaryDelete = (index) => {
+    setDeleteConfirmationOpen(true);
+    setDeleteConfirmationIndex(index);
+  };
+
+  const handleDeleteConfirmation = () => {
+    if (deleteConfirmationIndex !== null) {
+      if (deleteConfirmationIndex < primaryTableData.length) {
+        const updatedTableData = [...primaryTableData];
+        updatedTableData.splice(deleteConfirmationIndex, 1);
+        setPrimaryTableData(updatedTableData);
       } else {
-        console.error('Failed to save primary skill.');
+        const updatedTableData = [...secondaryTableData];
+        updatedTableData.splice(deleteConfirmationIndex - primaryTableData.length, 1);
+        setSecondaryTableData(updatedTableData);
       }
-    } catch (error) {
-      console.error('Error saving primary skill:', error);
+      setDeleteConfirmationOpen(false);
+      setDeleteConfirmationIndex(null);
     }
   };
 
-  return (
+  const handleDeleteCancel = () => {
+    setDeleteConfirmationOpen(false);
+    setDeleteConfirmationIndex(null);
+  };
+
+  const handleSaveSkills = async () => {
+    try {
+        const token = localStorage.getItem('token');
+        const email = localStorage.getItem('email');
+
+        
+        
+        // Save primary skill
+        const primarySkillResponse = await axios.post(
+          'http://localhost:3001/primaryskill',
+          {
+            email,
+            primarySkill: {
+                skillId: primarySkill.skillId, // Update this line
+                
+                yearsOfExperience: primarySkill.yearsOfExperience, // Update this line
+                certification: primarySkill.certification,
+              },
+
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            }
+          }
+        );
+        
+        if (primarySkillResponse.status === 200) { 
+            console.log('Saved primary skill:', primarySkillResponse.data);
+      } else {
+        console.error('Failed to save primary skill');
+        return;
+      }
+      
+        
+        // Save secondary skills
+        const secondarySkillsResponse = await axios.post(
+          'http://localhost:3001/secondaryskills',
+          {
+            secondarySkills: secondaryTableData.map(skill => ({
+                skillId: skill.skillId, // Update this line
+                
+                yearsOfExperience: skill.yearsOfExperience, // Update this line
+              certification: skill.certification
+            }))
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            }
+          }
+        );
+        console.log('Saved secondary skills:', secondarySkillsResponse.data);
+        
+        // Clear the skill tables after successful save
+        setPrimaryTableData([]);
+        setSecondaryTableData([]);
+      } catch (error) {
+        console.error('Error saving employee skills:', error);
+      }
+  };
+
+  const renderSkillTab = (
+    skill,
+    handleInputChange,
+    handleSaveSkills,
+    handleEdit,
+    handleUpdate,
+    handleDelete,
+    tableData,
+    selectedSkill
+  ) => (
     <Tab.Pane>
-      <Divider style={{ margin: '1rem 0' }} hidden />
       <Form>
         <Form.Group widths="equal">
-          <Form.Dropdown
-            label={<label style={{ fontSize: '20px', marginBottom: '18px' }}>Skill Name</label>}
-            placeholder="Skill Name"
-            name="skillId" // Change name to "skillId"
-            options={skillOptions}
-            search
-            selection
-            value={primarySkill.skillId} // Change skillName to skillId
-          
-            onChange={handlePrimarySkillChange}
-            style={{ fontSize: '20px' }}
-            required
-          />
+        <Form.Dropdown
+              
+              fluid
+              search
+              selection
+              name="skillId"
+              placeholder="Select a skill"
+              options={skills.map((skill) => ({
+                key: skill._id,
+                value: skill._id,
+                text: skill.name
+              }))}
+              value={skill.skillId}
+              onChange={handleInputChange}
+            />
           <Form.Input
-            label={<label style={{ fontSize: '20px', marginBottom: '18px' }}>Years of Experience</label>}
-            placeholder="Years of Experience"
             name="yearsOfExperience"
-            value={primarySkill.yearsOfExperience}
-            onChange={handlePrimarySkillChange}
-            style={{ fontSize: '20px' }}
-            required
+            placeholder="Years of Experience"
+            value={skill.yearsOfExperience}
+            onChange={handleInputChange}
           />
           <Form.Input
-            label={<label style={{ fontSize: '20px', marginBottom: '18px' }}>Certification</label>}
-            placeholder="Certification Name"
             name="certification"
-            value={primarySkill.certification}
-            onChange={handlePrimarySkillChange}
-            style={{ fontSize: '20px' }}
+            placeholder="Certification"
+            value={skill.certification}
+            onChange={handleInputChange}
           />
         </Form.Group>
-        <Divider style={{ margin: '1rem 0' }} hidden />
-        <Button color="purple" onClick={handleSave} size="big">
-          Save
-        </Button>
+        <Form.Group>
+          {selectedSkill ? (
+            <Form.Button primary onClick={handleUpdate}>
+              Update
+            </Form.Button>
+          ) : (
+            <Form.Button primary onClick={handleSaveSkills}>
+              Save
+            </Form.Button>
+          )}
+        </Form.Group>
       </Form>
+      <Table celled>
+        <Table.Header>
+          <Table.Row>
+            <Table.HeaderCell>Skill Name</Table.HeaderCell>
+           
+            <Table.HeaderCell>Years of Experience</Table.HeaderCell>
+            <Table.HeaderCell>Certification</Table.HeaderCell>
+            <Table.HeaderCell>Actions</Table.HeaderCell>
+          </Table.Row>
+        </Table.Header>
+        <Table.Body>
+          {tableData.map((skill, index) => (
+            <Table.Row key={index}>
+              <Table.Cell>{skill.skillId}</Table.Cell>
+            
+              <Table.Cell>{skill.yearsOfExperience}</Table.Cell>
+              <Table.Cell>{skill.certification}</Table.Cell>
+              <Table.Cell>
+                <Icon
+                  name="edit"
+                  onClick={() => handleEdit(index)}
+                  style={{ cursor: 'pointer' }}
+                />
+                <Icon
+                  name="delete"
+                  onClick={() => handleDelete(index)}
+                  style={{ cursor: 'pointer' }}
+                />
+              </Table.Cell>
+            </Table.Row>
+          ))}
+        </Table.Body>
+      </Table>
+      <Modal open={deleteConfirmationOpen} onClose={handleDeleteCancel} size="tiny">
+        <Modal.Header>Confirm Delete</Modal.Header>
+        <Modal.Content>
+          Are you sure you want to delete this skill?
+        </Modal.Content>
+        <Modal.Actions>
+          <Button negative onClick={handleDeleteCancel}>
+            No
+          </Button>
+          <Button positive onClick={handleDeleteConfirmation}>
+            Yes
+          </Button>
+        </Modal.Actions>
+      </Modal>
+      {alertMessage && (
+        <div className="alert">{alertMessage}</div>
+      )}
     </Tab.Pane>
   );
-};
-
-const SecondarySkillForm = ({ onSave, skillOptions }) => {
-  const [secondarySkills, setSecondarySkills] = useState([
-    { skillId: '', yearsOfExperience: '', certification: '' },
-  ]);
-
-  const handleSecondarySkillChange = (index, name, value) => {
-    const updatedSkills = [...secondarySkills];
-    updatedSkills[index] = { ...updatedSkills[index], [name]: value };
-    setSecondarySkills(updatedSkills);
-  };
-
-  const handleAddSecondarySkill = () => {
-    if (secondarySkills.length < 10) {
-      setSecondarySkills([
-        ...secondarySkills,
-        { skillId: '', yearsOfExperience: '', certification: '' },
-      ]);
-    }
-  };
-
-  const handleDeleteSecondarySkill = (index) => {
-    const updatedSkills = [...secondarySkills];
-    updatedSkills.splice(index, 1);
-    setSecondarySkills(updatedSkills);
-  };
-
- 
-  const handleSave = async () => {
-    try {
-      const email = localStorage.getItem('email'); // Get email from local storage
-      const token = localStorage.getItem('token');
-
-      const response = await fetch('http://localhost:3001/secondary', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-
-        },
-        body: JSON.stringify({
-          email,
-          secondarySkills: secondarySkills.map((skill) => ({
-            skillId: skill.skillId, // Change skillName to skillId
-            yearsOfExperience: skill.yearsOfExperience,
-            certification: skill.certification,
-          })),
-        }),
-      });
-
-      if (response.ok) {
-        onSave();
-      } else {
-        console.error('Failed to save secondary skills.');
-      }
-    } catch (error) {
-      console.error('Error saving secondary skills:', error);
-    }
-  };
-
-
-  const secondarySkillsForm = secondarySkills.map((skill, index) => (
-    <Form key={index}>
-      <Form.Group widths="equal">
-        <Form.Dropdown
-          label={<label style={{ fontSize: '20px', marginBottom: '18px' }}>Skill Name</label>}
-          placeholder="Skill Name"
-          //name="skillName"
-          name="skillId" // Change name to "skillId"
-          options={skillOptions}
-          search
-          selection
-          value={skill.skillId} // Change skillName to skillId
-          onChange={(e, { value }) => handleSecondarySkillChange(index, 'skillId', value)} // Change skillName to skillId
-          required
-          style={{ fontSize: '20px' }}
-        />
-        <Form.Input
-          label={<label style={{ fontSize: '20px', marginBottom: '18px' }}>Years of Experience</label>}
-          placeholder="Years of Experience"
-          name="yearsOfExperience"
-          value={skill.yearsOfExperience}
-          onChange={(e, { value }) =>
-            handleSecondarySkillChange(index, 'yearsOfExperience', value)
-          }
-          required
-          style={{ fontSize: '20px' }}
-        />
-        <Form.Input
-          label={<label style={{ fontSize: '20px', marginBottom: '18px' }}>Certification</label>}
-          placeholder="Certification"
-          name="certification"
-          value={skill.certification}
-          onChange={(e, { value }) =>
-            handleSecondarySkillChange(index, 'certification', value)
-          }
-          style={{ fontSize: '20px' }}
-        />
-        <Button
-          negative
-          icon="trash"
-          onClick={() => handleDeleteSecondarySkill(index)}
-          disabled={index === 0}
-        />
-      </Form.Group>
-    </Form>
-  ));
 
   return (
-    <Tab.Pane>
-      <Divider style={{ margin: '1rem 0' }} hidden />
-      {secondarySkillsForm}
-      <Divider style={{ margin: '1rem 0' }} hidden />
-      <Button size="big" color="purple" onClick={handleAddSecondarySkill} disabled={secondarySkills.length >= 10}>
-        Add
-      </Button>
-      <Button size="big" color="purple" onClick={handleSave}>
-        Save
-      </Button>
-    </Tab.Pane>
-  );
-};
-
-const EmployeePage = () => {
-  const [skillOptions, setSkillOptions] = useState([]);
-  const [primarySkill, setPrimarySkill] = useState({
-    skillId: '', // Change skillName to skillId
-    yearsOfExperience: '',
-    certification: '',
-  });
-  const [secondarySkills, setSecondarySkills] = useState([
-    { skillId: '', yearsOfExperience: '', certification: '' },
-  ]);
-
-
-  useEffect(() => {
-    fetchSkillNames();
-    fetchEmployeeSkills();
-  }, []);
-
-
-
-  const fetchEmployeeSkills = async () => {
-    try {
-       const email = localStorage.getItem('email');
-       const response = await fetch(`http://localhost:3001/employeeskills?email=${email}`, {
-         headers: {
-           Authorization: `Bearer ${localStorage.getItem('token')}`,
-         },
-       });
-       const data = await response.json();
-
-      if (data.primarySkill) {
-         setPrimarySkill(data.primarySkill);
-       }
-       if (data.secondarySkills.length > 0) {
-         setSecondarySkills(data.secondarySkills);
-       }
-     } catch (error) {
-       console.error('Error fetching employee skills:', error);
-     }
-   };
-
-
-
-  const fetchSkillNames = async () => {
-    try {
-      const response = await fetch('http://localhost:3001/skills', {
-        headers: {
-        Authorization: `Bearer ${localStorage.getItem('token')}`,
+    <Tab
+      menu={{ secondary: true, pointing: true }}
+      panes={[
+        {
+          menuItem: 'Primary Skill',
+          render: () =>
+            renderSkillTab(
+              primarySkill,
+              handlePrimaryInputChange,
+              handlePrimarySave,
+              handlePrimaryEdit,
+              handlePrimaryUpdate,
+              handlePrimaryDelete,
+              primaryTableData,
+              primarySelectedSkill
+            )
         },
-        });
-      const data = await response.json();
-      const skillNames = data.map((skill) => ({
-        key: skill._id,
-        text: skill.name,
-        value: skill._id, 
-      }));
-      setSkillOptions(skillNames);
-    } catch (error) {
-      console.error('Error fetching skill names:', error);
-    }
-  };
-
-  const handleSavePrimarySkill = (data) => {
-    console.log(data);
-  };
-
-  const handleSaveSecondarySkills = (data) => {
-    console.log(data);
-  };
-
-  const panes = [
-    {
-      menuItem: { content: <span style={{ fontSize: '2.2rem', color: 'purple' }}>Primary Skill</span> },
-      render: () => (
-        <PrimarySkillForm
-          onSave={handleSavePrimarySkill}
-          skillOptions={skillOptions}
-        />
-      ),
-    },
-    {
-      menuItem: { content: <span style={{ fontSize: '2.2rem', color: 'purple' }}>Secondary Skill</span> },
-      render: () => (
-        <SecondarySkillForm
-          onSave={handleSaveSecondarySkills}
-          skillOptions={skillOptions}
-        />
-      ),
-    },
-  ];
-
-  return (
-    <div>
-      <Segment size="huge" attached="top">
-        <Image src="Accenture icon.png" size="small" />
-      </Segment>
-      <Segment size="large" attached>
-        <Header as="h1" size="large">
-          Hello Employee!
-        </Header>
-      </Segment>
-
-      <Tab panes={panes} />
-    </div>
+        {
+          menuItem: 'Secondary Skill',
+          render: () =>
+            renderSkillTab(
+              secondarySkill,
+              handleSecondaryInputChange,
+              handleSecondarySave,
+              handleSecondaryEdit,
+              handleSecondaryUpdate,
+              handleSecondaryDelete,
+              secondaryTableData,
+              secondarySelectedSkill
+            )
+        }
+      ]}
+    />
   );
 };
 
