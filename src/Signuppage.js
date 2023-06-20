@@ -8,6 +8,8 @@ const [firstName, setFirstName] = useState('');
 const [lastName, setLastName] = useState('');
 const [email, setEmail] = useState('');
 const [password, setPassword] = useState('');
+const [employeelevel,setEmployeelevel] = useState('');
+const [mobileno,setMobileno] = useState('');
 const [confirmPassword, setConfirmPassword] = useState('');
 const [errorMessage, setErrorMessage] = useState('');
 const [showModal, setShowModal] = useState(false);
@@ -15,27 +17,38 @@ const [showPassword, setShowPassword] = useState(false);
 const navigate = useNavigate();
 
 const handleSignUp = async() => {
-if (!firstName || !lastName || !email || !password || !confirmPassword) {
+if (!firstName || !lastName || !email || !mobileno || !employeelevel || !password || !confirmPassword ) {
 setErrorMessage('Please fill in all fields.');
 return;
 }
+
+
+
+if (!email.includes('@')) {
+setErrorMessage('Invalid email address.');
+return;
+}
+
+//isNaN() function to check if the mobileno value is not a number.
+if (isNaN(mobileno) || mobileno.length !== 10) {   
+    setErrorMessage('Invalid mobile number. Please enter a 10-digit number.');
+    return;
+  }
 
 if (password !== confirmPassword) {
 setErrorMessage('Passwords do not match.');
 return;
 }
 
-if (!email.includes('@')) {
-setErrorMessage('Invalid email address.');
-return;
-}
 try {
     // Send a POST request to the backend API
     await axios.post('http://localhost:3001/signup', {
-    firstname:firstName,
+    firstname: firstName,
     lastname : lastName,
     email,
     password,
+    mobileno,
+    employeelevel,
     });
     setShowModal(true);
     setFirstName('');
@@ -43,6 +56,8 @@ try {
     setEmail('');
     setPassword('');
     setConfirmPassword('');
+    setMobileno('');
+    setEmployeelevel('');
     setErrorMessage('');
     
     } catch (error) {
@@ -96,6 +111,26 @@ placeholder="Email"
 type="email"
 value={email}
 onChange={(e) => setEmail(e.target.value)}
+style= {{fontSize:'23px'}}
+/>
+<Form.Input
+fluid
+icon="phone"
+iconPosition="left"
+placeholder="Mobile No."
+type="tel"
+value={mobileno}
+onChange={(e) => setMobileno(e.target.value)}
+style= {{fontSize:'23px'}}
+/>
+<Form.Input
+fluid
+icon="briefcase"
+iconPosition="left"
+placeholder="Designation Level"
+type="text"
+value={employeelevel}
+onChange={(e) => setEmployeelevel(e.target.value)}
 style= {{fontSize:'23px'}}
 />
 <Form.Input

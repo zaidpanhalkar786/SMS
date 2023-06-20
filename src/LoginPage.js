@@ -3,8 +3,9 @@ import { useState } from "react"
 import { Button, Divider, Form, Grid, Image, Message, Segment } from 'semantic-ui-react'
 import Adminfrontpage from "./Adminfrontpage";
 import axios from "axios";
-import EmployeePage from "./EmployeePage";
+
 import Employee from "./Employee";
+import ProjectManager from "./ProjectManager";
 
 function MyLoginPage() {
     const[errorMessage,setErrorMessage] = useState('')
@@ -13,6 +14,10 @@ function MyLoginPage() {
     const [isloggedIn, setIsLoggedIn] =useState(false)
     const [role, setRole] = useState('');
     const [email, setEmail] = useState('');
+    const [employeelevel,setEmployeelevel] = useState('');
+    const [mobileno,setMobileno] = useState('');
+    const [Name,setName] = useState('')
+    const [firstname,setFirstname] = useState('')
 
     const handleUsernameChange = (e) => {
         setUsername(e.target.value);
@@ -29,12 +34,17 @@ function MyLoginPage() {
         password,
         });
         console.log(response.data)
-        const {token, role,email} = response.data;
+        const {token,role,email,mobileno,employeelevel,firstname,lastname} = response.data;
         
         if (token) {
         setIsLoggedIn(true)
+        const Name = firstname + ' ' + lastname; // Concatenate first name and last name
+        localStorage.setItem('Name',Name);
+        localStorage.setItem('mobileno',mobileno)
+        localStorage.setItem('employeelevel',employeelevel)
         localStorage.setItem('token', token);
         localStorage.setItem('email', email);
+        localStorage.setItem('firstname',firstname)
         setRole(role); // Set the role in the state
         console.log('Login successful!');
       
@@ -51,9 +61,11 @@ function MyLoginPage() {
         
         }else if (role === 'Admin') {
           return <Adminfrontpage  email={email}/>;
-        } else {
-            return <Employee email = {email} />
-        }
+        } else if(role === 'Employee')  {
+            return <Employee email={email} mobileno = {mobileno} employeelevel={employeelevel} Name={Name} firstname={firstname}/>
+        }else if(role === 'Project Manager')  {
+          return <ProjectManager email={email} mobileno = {mobileno} employeelevel={employeelevel} Name={Name} firstname={firstname}/>
+      }
        } 
   
     return(

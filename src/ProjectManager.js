@@ -1,7 +1,177 @@
 import React, { useState,useEffect } from 'react';
 import './Adminskillcatalog.css'
-import { Button, Form, Icon, Modal, Table, Tab,Segment,Image,Header,Divider} from 'semantic-ui-react';
 import axios from 'axios';
+import { Table, Checkbox, Button, Input, Form, Icon, Modal, Tab,Segment,Image,Header,Divider, Label } from 'semantic-ui-react';
+
+const SearchResource = () => {
+  const [skillName, setSkillName] = useState('');
+  const [primarySkill, setPrimarySkill] = useState(true);
+  const [secondarySkill, setSecondarySkill] = useState(false);
+  const [searchResults, setSearchResults] = useState([]);
+  const [error, setError] = useState('');
+  const [skillOptions, setSkillOptions] = useState([]);
+
+  useEffect(() => {
+    fetchSkills(); // Fetch skills
+  }, []);
+
+  const fetchSkills = async () => {
+    try {
+      const response = await axios.get('http://localhost:3001/skills', {
+        headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
+        email: localStorage.getItem('email')
+        },
+        }); // Fetch skills from the backend
+    setSkillOptions(response.data);
+    } catch (error) {
+      console.error('Error fetching skills:', error);
+    }
+  };
+
+  const handleSearch = async () => {
+    let url = `http://localhost:3001/search?skillName=${skillName.toLowerCase()}`;
+
+    if (!primarySkill && !secondarySkill) {
+      setError('Please select at least one skill');
+      return;
+    }
+    setError(''); // Clear any previous error
+
+    if (primarySkill && !secondarySkill) {
+      url += '&primarySkill=true';
+    } else if (!primarySkill && secondarySkill) {
+      url += '&secondarySkill=true';
+    } else if (primarySkill && secondarySkill) {
+      url += '&primarySkill=true&secondarySkill=true';
+    }
+
+    try {
+      const response = await axios.get(url, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+      });
+      setSearchResults(response.data.employees);
+      setError(''); // Clear any previous error
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  return (
+    <div>
+     <Form>
+  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+    <div style={{ display: 'flex', marginBottom: '20px' }}>
+      <Input
+        type="text"
+        value={skillName}
+        onChange={(e) => setSkillName(e.target.value)}
+        placeholder="Enter skill name"
+        style={{ width: '600px', height: '50px', fontSize: '23px' }}
+      />
+      <Button color='purple' size='big' onClick={handleSearch} style={{ marginLeft: '10px' }}>
+        Search
+      </Button>
+    </div>
+    <div style={{ display: 'flex' }}>
+    
+      <Form.Group style={{ marginLeft: '0px' }}>
+        <Checkbox
+          label="Primary Skill"
+          checked={primarySkill}
+          style={{ fontSize:'20px'}}
+          // onChange={(e, data) => setPrimarySkill(data.checked)}
+        />
+        <Checkbox
+          label="Secondary Skill"
+          checked={secondarySkill}
+          style={{ fontSize:'20px'}}
+          onChange={(e, data) => setSecondarySkill(data.checked)}
+        />
+      </Form.Group>
+    </div>
+    {error && <div>{error}</div>}
+  </div>
+</Form>
+      <Divider style={{ margin: '40px',backgroundColor: 'black' }}/>
+      {searchResults.length > 0 && (
+        <div>
+          <h2 style={{color:'purple'}}>Search Results</h2>
+          <Table celled border='5' className='skilltable'>
+            <Table.Header>
+              <Table.Row>
+                <Table.HeaderCell style={{fontSize:'23px',color:'purple'}}>Employee Name</Table.HeaderCell>
+                <Table.HeaderCell style={{fontSize:'23px',color:'purple'}}>Email</Table.HeaderCell>
+                <Table.HeaderCell style={{fontSize:'23px',color:'purple'}}>Mobile Number</Table.HeaderCell>
+                <Table.HeaderCell style={{fontSize:'23px',color:'purple'}}>Employee Level</Table.HeaderCell>
+                <Table.HeaderCell style={{fontSize:'23px',color:'purple'}}>Skill Category</Table.HeaderCell>
+                <Table.HeaderCell style={{fontSize:'23px',color:'purple'}}>Skill Description</Table.HeaderCell>
+                <Table.HeaderCell style={{fontSize:'23px',color:'purple'}}>Years of Experience</Table.HeaderCell>
+                <Table.HeaderCell style={{fontSize:'23px',color:'purple'}}>Certification</Table.HeaderCell>
+              </Table.Row>
+            </Table.Header>
+
+            <Table.Body style={{ fontSize: '22px' }}>
+              {searchResults.map((employee) => {
+                if (!employee.primarySkill) {
+                  return null;
+                }
+
+                return (
+                  <Table.Row key={employee._id}>
+                     <Table.Cell>{employee.Name}</Table.Cell>
+                    <Table.Cell >{employee.email}</Table.Cell>
+                    <Table.Cell >{employee.mobileno}</Table.Cell>
+                    <Table.Cell >{employee.employeelevel}</Table.Cell>
+                    <Table.Cell >Primary Skill</Table.Cell>
+                    <Table.Cell >
+                      {employee.primarySkill.skillId
+                        ? employee.primarySkill.skillId.description
+                        : ''}
+                    </Table.Cell>
+                    <Table.Cell >
+                      {employee.primarySkill.yearsOfExperience
+                        ? employee.primarySkill.yearsOfExperience
+                        : ''}
+                    </Table.Cell >
+                    <Table.Cell >
+                      {employee.primarySkill.certification
+                        ? employee.primarySkill.certification
+                        : ''}
+                    </Table.Cell>
+                  </Table.Row>
+                );
+              })}
+              {searchResults.map((employee) =>
+                employee.secondarySkills.map((secondarySkill) => (
+                  <Table.Row key={secondarySkill._id}>
+                    <Table.Cell>{employee.Name}</Table.Cell>
+                    <Table.Cell>{employee.email}</Table.Cell>
+                    <Table.Cell>{employee.mobileno}</Table.Cell>
+                    <Table.Cell>{employee.employeelevel}</Table.Cell> 
+
+                    <Table.Cell>Secondary Skill</Table.Cell>
+                    <Table.Cell>
+                      {secondarySkill.skillId ? secondarySkill.skillId.description : ''}
+                    </Table.Cell>
+                    <Table.Cell>
+                      {secondarySkill.yearsOfExperience ? secondarySkill.yearsOfExperience : ''}
+                    </Table.Cell>
+                    <Table.Cell>
+                      {secondarySkill.certification ? secondarySkill.certification : ''}
+                    </Table.Cell>
+                  </Table.Row>
+                ))
+              )}
+            </Table.Body>
+          </Table>
+        </div>
+      )}
+    </div>
+  );
+};
 
 const PrimarySkillForm = ({ primarySkillsTable, setPrimarySkillsTable }) => {
   const [primarySkill, setPrimarySkill] = useState({
@@ -638,9 +808,10 @@ const SecondarySkillForm = ({ secondarySkillsTable, setSecondarySkillsTable }) =
 
 
 
-  const Employee = () => {
+  const ProjectManager = () => {
     const [primarySkillsTable, setPrimarySkillsTable] = useState([]);
     const [secondarySkillsTable, setSecondarySkillsTable] = useState([]);
+   // const [searchResults, setSearchResults] = useState([]);
 
     const panes = [
         {
@@ -666,7 +837,15 @@ const SecondarySkillForm = ({ secondarySkillsTable, setSecondarySkillsTable }) =
             />
           </Tab.Pane>
         ),
-      },
+      },{
+        menuItem: { content: <span style={{ fontSize: '2.2rem', color: 'purple' }}>Search Resource</span> },
+        render: () => (
+          <Tab.Pane>
+            <Divider hidden style={{margin:'7px'}} />
+            <SearchResource />
+        </Tab.Pane>
+      ),
+    },
     ];
   
     return (
@@ -685,4 +864,5 @@ const SecondarySkillForm = ({ secondarySkillsTable, setSecondarySkillsTable }) =
   );
 };
 
-export default Employee;
+
+export default ProjectManager;

@@ -8,7 +8,7 @@ import AdminManageusers from './AdminManageusers';
 import MyLoginPage from './LoginPage';
 import SignUpPage from './Signuppage';
 import Employee from './Employee';
-
+import ProjectManager from './ProjectManager';
 
 function App() {
   
@@ -22,6 +22,7 @@ function App() {
         <Route path='/admin-skillcatalog' Component={Adminskillcatalog} />
         <Route path='/admin-managerusers' Component={AdminManageusers} />
         <Route path='/employee' Component={Employee} />
+        <Route path='/projectmanager' Component={ProjectManager} />
       </Routes>
     </Router>
      

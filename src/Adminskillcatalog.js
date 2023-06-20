@@ -78,6 +78,7 @@ const fetchSkills = async () => {
     setCurrentDescription(skill.description);
     setShowUpdateButton(true);
     setSelectedSkillToUpdate({ ...skill });
+    console.log(selectedSkillToUpdate)
     };
     
     const handleUpdateSave = async () => {
