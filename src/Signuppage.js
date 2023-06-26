@@ -8,9 +8,10 @@ import {
   Modal,
   Segment
 } from 'semantic-ui-react'
-import { useNavigate } from 'react-router'
+// import { useNavigate } from 'react-router'
 import axios from 'axios'
 
+// eslint-disable-next-line space-before-function-paren
 function SignUpPage() {
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
@@ -22,7 +23,7 @@ function SignUpPage() {
   const [errorMessage, setErrorMessage] = useState('')
   const [showModal, setShowModal] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
-  const navigate = useNavigate()
+  // const navigate = useNavigate()
 
   const handleSignUp = async () => {
     if (
@@ -43,7 +44,7 @@ function SignUpPage() {
       return
     }
 
-    //isNaN() function to check if the mobileno value is not a number.
+    // isNaN() function to check if the mobileno value is not a number.
     if (isNaN(mobileno) || mobileno.length !== 10) {
       setErrorMessage('Invalid mobile number. Please enter a 10-digit number.')
       return
@@ -85,7 +86,7 @@ function SignUpPage() {
   }
 
   const handleModalClose = () => {
-    navigate('/')
+    // navigate('/')
     setShowModal(false)
   }
 

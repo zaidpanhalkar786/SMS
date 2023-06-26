@@ -1,6 +1,5 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import './Adminskillcatalog.css'
-import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import {
@@ -14,6 +13,8 @@ import {
   Icon,
   Modal
 } from 'semantic-ui-react'
+
+// eslint-disable-next-line space-before-function-paren
 function Adminskillcatalog() {
   const [skills, setSkills] = useState([])
   const [currentSkill, setCurrentSkill] = useState('')
@@ -23,6 +24,7 @@ function Adminskillcatalog() {
   const [selectedSkillToDelete, setSelectedSkillToDelete] = useState(null)
   const [selectedSkillToUpdate, setSelectedSkillToUpdate] = useState(null)
   const [searchQuery, setSearchQuery] = useState('')
+  //  const [errorMessage, setErrorMessage] = useState('')
   const navigate = useNavigate()
 
   const handleGoBack = () => {
@@ -60,6 +62,12 @@ function Adminskillcatalog() {
 
     if (existingSkill) {
       alert('Skill exists')
+      return
+    }
+
+    const words = currentDescription.trim().split(/\s+/)
+    if (words.length > 50) {
+      alert('Skill description should be limited to 50 words')
       return
     }
 
@@ -106,6 +114,12 @@ function Adminskillcatalog() {
 
     if (existingSkill) {
       alert('Skill already exists')
+      return
+    }
+    const words = currentDescription.trim().split(/\s+/)
+
+    if (words.length > 50) {
+      alert('Skill description should be limited to 50 words')
       return
     }
 
@@ -288,7 +302,6 @@ function Adminskillcatalog() {
       <Modal
         open={showDeleteConfirmation}
         style={{ width: '450px', fontSize: '20px' }}
-        //dimmer="blurring"
         onClose={() => setShowDeleteConfirmation(false)}
       >
         <Modal.Header>Confirm Deletion</Modal.Header>

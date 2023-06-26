@@ -2,6 +2,7 @@ import React from 'react'
 import 'semantic-ui-css/semantic.min.css'
 import { Header, Segment, Image, Divider } from 'semantic-ui-react'
 
+// eslint-disable-next-line space-before-function-paren
 function Adminfrontpage() {
   return (
     <div>

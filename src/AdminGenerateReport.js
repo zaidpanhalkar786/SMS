@@ -3,7 +3,6 @@ import './Adminskillcatalog.css'
 import axios from 'axios'
 import {
   Table,
-  Checkbox,
   Button,
   Form,
   Icon,
@@ -15,10 +14,11 @@ import { useNavigate } from 'react-router'
 
 const AdminGenerateReport = () => {
   const [skillName, setSkillName] = useState('')
-  const [primarySkill, setPrimarySkill] = useState(true)
+
+  const [primarySkill, setPrimarySkill] = useState(true) // eslint-disable-line no-unused-vars
   const [secondarySkill, setSecondarySkill] = useState(false)
   const [searchResults, setSearchResults] = useState([])
-  const [error, setError] = useState('')
+  const [error, setError] = useState('') // eslint-disable-line no-unused-vars
   const [skillOptions, setSkillOptions] = useState([])
 
   const navigate = useNavigate()
@@ -44,6 +44,11 @@ const AdminGenerateReport = () => {
   }
 
   const handleSearch = async () => {
+    if (!skillName) {
+      setError('Please enter a skill')
+      return
+    }
+
     let url = `http://localhost:3001/search?skillName=${skillName}`
 
     if (!primarySkill && !secondarySkill) {
@@ -126,21 +131,67 @@ const AdminGenerateReport = () => {
               Search
             </Button>
           </div>
-          <div style={{ display: 'flex' }}>
-            <Checkbox
-              label="Primary Skill"
-              checked={primarySkill}
-              style={{ fontSize: '20px' }}
-              // onChange={(e, data) => setPrimarySkill(data.checked)}
-            />
-            <Checkbox
-              label="Secondary Skill"
-              checked={secondarySkill}
-              style={{ fontSize: '20px' }}
-              onChange={(e, data) => setSecondarySkill(data.checked)}
-            />
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}
+          >
+            <label
+              style={{ fontSize: '25px', marginRight: '10px', color: 'purple' }}
+            >
+              Skill Category:
+            </label>
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                marginRight: '18px'
+              }}
+            >
+              <input
+                type="checkbox"
+                id="primarySkill"
+                checked={primarySkill}
+                // onChange={(e) => setPrimarySkill(e.target.checked)}
+                style={{ marginRight: '5px' }}
+              />
+              <label
+                htmlFor="primarySkill"
+                style={{
+                  fontSize: '23px',
+                  color: primarySkill ? 'purple' : 'black'
+                }}
+              >
+                Primary Skill
+              </label>
+            </div>
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                marginRight: '120px'
+              }}
+            >
+              <input
+                type="checkbox"
+                id="secondarySkill"
+                checked={secondarySkill}
+                onChange={(e) => setSecondarySkill(e.target.checked)}
+                style={{ marginRight: '5px', color: 'purple' }}
+              />
+              <label
+                htmlFor="secondarySkill"
+                style={{
+                  fontSize: '23px',
+                  color: primarySkill ? 'purple' : 'black'
+                }}
+              >
+                Secondary Skill
+              </label>
+            </div>
           </div>
-          {error && <div>{error}</div>}
         </div>
       </Form>
       <Divider style={{ margin: '40px', backgroundColor: 'black' }} />
@@ -160,7 +211,7 @@ const AdminGenerateReport = () => {
                   Mobile Number
                 </Table.HeaderCell>
                 <Table.HeaderCell style={{ fontSize: '23px', color: 'purple' }}>
-                  Employee Level
+                  Designation Level
                 </Table.HeaderCell>
                 <Table.HeaderCell style={{ fontSize: '23px', color: 'purple' }}>
                   Skill Category

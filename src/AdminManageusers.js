@@ -26,6 +26,7 @@ const statusOptions = [
   { label: 'Inactive', value: 'Inactive' }
 ]
 
+// eslint-disable-next-line space-before-function-paren
 function AdminManageusers() {
   const navigate = useNavigate()
   const handleGoBack = () => {

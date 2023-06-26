@@ -11,6 +11,7 @@ import Employee from './Employee'
 import ProjectManager from './ProjectManager'
 import AdminGenerateReport from './AdminGenerateReport'
 
+// eslint-disable-next-line space-before-function-paren
 function App() {
   return (
     <Router>

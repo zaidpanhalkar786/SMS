@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import PropTypes from 'prop-types'
 import './Adminskillcatalog.css'
 import {
   Button,
@@ -15,6 +16,11 @@ import {
 import axios from 'axios'
 
 const PrimarySkillForm = ({ primarySkillsTable, setPrimarySkillsTable }) => {
+  PrimarySkillForm.propTypes = {
+    primarySkillsTable: PropTypes.array.isRequired,
+    setPrimarySkillsTable: PropTypes.func.isRequired
+  }
+
   const [primarySkill, setPrimarySkill] = useState({
     skillId: '',
     yearsOfExperience: '',
@@ -91,6 +97,13 @@ const PrimarySkillForm = ({ primarySkillsTable, setPrimarySkillsTable }) => {
       return
     }
     try {
+      const selectedSkill = skillOptions.find(
+        (skill) => skill._id === primarySkill.skillId
+      )
+
+      //   const skillname = selectedSkill.name
+
+      //   console.log(skillname)
       const response = await axios.post(
         'http://localhost:3001/primaryskill',
         {
@@ -98,7 +111,12 @@ const PrimarySkillForm = ({ primarySkillsTable, setPrimarySkillsTable }) => {
           mobileno: localStorage.getItem('mobileno'),
           employeelevel: localStorage.getItem('employeelevel'),
           Name: localStorage.getItem('Name'),
-          primarySkill: primarySkill
+          primarySkill: {
+            skillId: selectedSkill._id, // Save the skillId
+            skillName: selectedSkill.name, // Save the skill name
+            yearsOfExperience: primarySkill.yearsOfExperience,
+            certification: primarySkill.certification
+          }
         },
         {
           headers: {
@@ -214,6 +232,7 @@ const PrimarySkillForm = ({ primarySkillsTable, setPrimarySkillsTable }) => {
               value={primarySkill.skillId}
               onChange={handleInputChange}
               style={{ fontSize: '20px' }}
+              required
             />
             <Form.Input
               label={
@@ -226,6 +245,7 @@ const PrimarySkillForm = ({ primarySkillsTable, setPrimarySkillsTable }) => {
               onChange={handleInputChange}
               error={primarySkill.error ? primarySkill.error : false}
               style={{ fontSize: '20px' }}
+              required
             />
             <Form.Input
               label={
@@ -290,7 +310,11 @@ const PrimarySkillForm = ({ primarySkillsTable, setPrimarySkillsTable }) => {
               {primarySkillsTable.map((skill, index) => (
                 <Table.Row key={index}>
                   <Table.Cell style={{ fontSize: '20px' }}>
-                    {skill.skillId}
+                    {
+                      skillOptions.find(
+                        (option) => option._id === skill.skillId
+                      )?.name
+                    }
                   </Table.Cell>
                   <Table.Cell style={{ fontSize: '20px' }}>
                     {skill.yearsOfExperience}
@@ -334,6 +358,11 @@ const SecondarySkillForm = ({
   secondarySkillsTable,
   setSecondarySkillsTable
 }) => {
+  SecondarySkillForm.propTypes = {
+    secondarySkillsTable: PropTypes.array.isRequired,
+    setSecondarySkillsTable: PropTypes.func.isRequired
+  }
+
   const [secondarySkill, setSecondarySkill] = useState({
     skillId: '',
     yearsOfExperience: '',
@@ -422,13 +451,23 @@ const SecondarySkillForm = ({
     }
 
     try {
+      const selectedSkill = skillOptions.find(
+        (skill) => skill._id === secondarySkill.skillId
+      )
       const token = localStorage.getItem('token')
       const email = localStorage.getItem('email')
       const response = await axios.post(
         'http://localhost:3001/secondaryskill',
         {
           email: email,
-          secondarySkills: [secondarySkill]
+          secondarySkills: [
+            {
+              skillId: selectedSkill._id, // Save the skillId
+              skillName: selectedSkill.name, // Save the skill name
+              yearsOfExperience: secondarySkill.yearsOfExperience,
+              certification: secondarySkill.certification
+            }
+          ]
         },
         {
           headers: {
@@ -446,6 +485,7 @@ const SecondarySkillForm = ({
       }
     } catch (error) {
       console.error('Error saving secondary skills:', error)
+      alert('Skill exists as Primary Skill')
     }
   }
 
@@ -516,6 +556,7 @@ const SecondarySkillForm = ({
       setEditIndex(null)
     } catch (error) {
       console.error('Error updating secondary skill:', error)
+      alert('Skill exists as Primary Skill')
     }
   }
 
@@ -591,6 +632,7 @@ const SecondarySkillForm = ({
               clearable
               onChange={handleInputChange}
               style={{ fontSize: '20px' }}
+              required
             />
             <Form.Input
               label={
@@ -666,7 +708,11 @@ const SecondarySkillForm = ({
               {secondarySkillsTable.map((skill, index) => (
                 <Table.Row key={index}>
                   <Table.Cell style={{ fontSize: '20px' }}>
-                    {skill.skillId}
+                    {
+                      skillOptions.find(
+                        (option) => option._id === skill.skillId
+                      )?.name
+                    }
                   </Table.Cell>
                   <Table.Cell style={{ fontSize: '20px' }}>
                     {skill.yearsOfExperience}
@@ -746,7 +792,7 @@ const Employee = () => {
     }
   }
 
-  //fetching secondary skills
+  // fetching secondary skills
 
   const fetchSecondarySkills = async () => {
     try {

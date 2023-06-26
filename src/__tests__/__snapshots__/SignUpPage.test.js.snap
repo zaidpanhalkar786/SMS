@@ -1,0 +1,237 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`SignUpPage renders sign up form 1`] = `
+<div
+  className="ui center aligned middle aligned grid"
+  style={
+    Object {
+      "height": "100vh",
+    }
+  }
+>
+  <div
+    className="column"
+    style={
+      Object {
+        "maxWidth": 650,
+      }
+    }
+  >
+    <h2
+      className="ui center aligned header"
+    >
+      Sign Up
+    </h2>
+    <form
+      className="ui large form"
+      onSubmit={[Function]}
+    >
+      <div
+        className="ui stacked segment"
+      >
+        <div
+          className="field"
+        >
+          <div
+            className="ui fluid left icon input"
+            style={
+              Object {
+                "fontSize": "23px",
+              }
+            }
+          >
+            <input
+              aria-describedby={null}
+              onChange={[Function]}
+              placeholder="First Name"
+              type="text"
+              value=""
+            />
+            <i
+              aria-hidden="true"
+              className="user icon"
+              onClick={[Function]}
+            />
+          </div>
+        </div>
+        <div
+          className="field"
+        >
+          <div
+            className="ui fluid left icon input"
+            style={
+              Object {
+                "fontSize": "23px",
+              }
+            }
+          >
+            <input
+              aria-describedby={null}
+              onChange={[Function]}
+              placeholder="Last Name"
+              type="text"
+              value=""
+            />
+            <i
+              aria-hidden="true"
+              className="user icon"
+              onClick={[Function]}
+            />
+          </div>
+        </div>
+        <div
+          className="field"
+        >
+          <div
+            className="ui fluid left icon input"
+            style={
+              Object {
+                "fontSize": "23px",
+              }
+            }
+          >
+            <input
+              aria-describedby={null}
+              onChange={[Function]}
+              placeholder="Email"
+              type="email"
+              value=""
+            />
+            <i
+              aria-hidden="true"
+              className="mail icon"
+              onClick={[Function]}
+            />
+          </div>
+        </div>
+        <div
+          className="field"
+        >
+          <div
+            className="ui fluid left icon input"
+            style={
+              Object {
+                "fontSize": "23px",
+              }
+            }
+          >
+            <input
+              aria-describedby={null}
+              onChange={[Function]}
+              placeholder="Mobile No."
+              type="tel"
+              value=""
+            />
+            <i
+              aria-hidden="true"
+              className="phone icon"
+              onClick={[Function]}
+            />
+          </div>
+        </div>
+        <div
+          className="field"
+        >
+          <div
+            className="ui fluid left icon input"
+            style={
+              Object {
+                "fontSize": "23px",
+              }
+            }
+          >
+            <input
+              aria-describedby={null}
+              onChange={[Function]}
+              placeholder="Designation Level"
+              type="text"
+              value=""
+            />
+            <i
+              aria-hidden="true"
+              className="briefcase icon"
+              onClick={[Function]}
+            />
+          </div>
+        </div>
+        <div
+          className="field"
+        >
+          <div
+            className="ui fluid action left icon input"
+            style={
+              Object {
+                "fontSize": "23px",
+              }
+            }
+          >
+            <input
+              aria-describedby={null}
+              onChange={[Function]}
+              placeholder="Password"
+              type="password"
+              value=""
+            />
+            <i
+              aria-hidden="true"
+              className="lock icon"
+              onClick={[Function]}
+            />
+            <button
+              className="ui icon button"
+              onClick={[Function]}
+            >
+              <i
+                aria-hidden="true"
+                className="eye icon"
+                onClick={[Function]}
+              />
+            </button>
+          </div>
+        </div>
+        <div
+          className="field"
+        >
+          <div
+            className="ui fluid action left icon input"
+            style={
+              Object {
+                "fontSize": "23px",
+              }
+            }
+          >
+            <input
+              aria-describedby={null}
+              onChange={[Function]}
+              placeholder="Confirm Password"
+              type="password"
+              value=""
+            />
+            <i
+              aria-hidden="true"
+              className="lock icon"
+              onClick={[Function]}
+            />
+            <button
+              className="ui icon button"
+              onClick={[Function]}
+            >
+              <i
+                aria-hidden="true"
+                className="eye icon"
+                onClick={[Function]}
+              />
+            </button>
+          </div>
+        </div>
+        <button
+          className="ui purple massive fluid button"
+          onClick={[Function]}
+        >
+          Save
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+`;

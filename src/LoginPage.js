@@ -14,17 +14,25 @@ import axios from 'axios'
 import Employee from './Employee'
 import ProjectManager from './ProjectManager'
 
+// eslint-disable-next-line space-before-function-paren
 function MyLoginPage() {
   const [errorMessage, setErrorMessage] = useState('')
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [isloggedIn, setIsLoggedIn] = useState(false)
   const [role, setRole] = useState('')
-  const [email, setEmail] = useState('')
-  const [employeelevel, setEmployeelevel] = useState('')
-  const [mobileno, setMobileno] = useState('')
-  const [Name, setName] = useState('')
-  const [firstname, setFirstname] = useState('')
+  const [status, Setstatus] = useState('')
+  // const [email, setEmail] = useState('')
+  // const [employeelevel, setEmployeelevel] = useState('')
+  // const [mobileno, setMobileno] = useState('')
+  // const [Name, setName] = useState('')
+  // const [firstname, setFirstname] = useState('')
+
+  const email = ''
+  const employeelevel = ''
+  const mobileno = ''
+  const Name = ''
+  const firstname = ''
 
   const handleUsernameChange = (e) => {
     setUsername(e.target.value)
@@ -43,6 +51,7 @@ function MyLoginPage() {
       const {
         token,
         role,
+        status,
         email,
         mobileno,
         employeelevel,
@@ -60,16 +69,20 @@ function MyLoginPage() {
         localStorage.setItem('email', email)
         localStorage.setItem('firstname', firstname)
         setRole(role) // Set the role in the state
+        Setstatus(status) // Set status in the state
         console.log('Login successful!')
-      } else {
-        setErrorMessage('Invalid email id or password')
       }
     } catch (error) {
       setErrorMessage('Invalid email id or password')
     }
   }
   if (isloggedIn) {
-    if (role === 'Admin') {
+    // prettier-ignore  // eslint-disable-line quotes
+    if (role === '' && status === '') {
+      alert('Roles not configured. Please try again later.')
+    } else if (status === 'Inactive') {
+      alert('User Inactive. Please contact the administrator.')
+    } else if (role === 'Admin' && status === 'Active') {
       return (
         <Adminfrontpage
           email={email}
@@ -79,7 +92,7 @@ function MyLoginPage() {
           firstname={firstname}
         />
       )
-    } else if (role === 'Employee') {
+    } else if (role === 'Employee' && status === 'Active') {
       return (
         <Employee
           email={email}
@@ -89,7 +102,7 @@ function MyLoginPage() {
           firstname={firstname}
         />
       )
-    } else if (role === 'Project Manager') {
+    } else if (role === 'Project Manager' && status === 'Active') {
       return (
         <ProjectManager
           email={email}
