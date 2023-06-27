@@ -8,7 +8,7 @@ import {
   Modal,
   Segment
 } from 'semantic-ui-react'
-// import { useNavigate } from 'react-router'
+import { useNavigate } from 'react-router'
 import axios from 'axios'
 
 // eslint-disable-next-line space-before-function-paren
@@ -23,7 +23,7 @@ function SignUpPage() {
   const [errorMessage, setErrorMessage] = useState('')
   const [showModal, setShowModal] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
-  // const navigate = useNavigate()
+  const navigate = useNavigate()
 
   const handleSignUp = async () => {
     if (
@@ -86,7 +86,7 @@ function SignUpPage() {
   }
 
   const handleModalClose = () => {
-    // navigate('/')
+    navigate('/')
     setShowModal(false)
   }
 
@@ -188,7 +188,7 @@ function SignUpPage() {
         </Form>
       </Grid.Column>
 
-      <Modal size="small" open={showModal} onClose={handleModalClose}>
+      <Modal size="tiny" open={showModal} onClose={handleModalClose}>
         <Modal.Header style={{ fontSize: '20px' }}>
           Registration Successful
         </Modal.Header>

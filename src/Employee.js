@@ -740,7 +740,7 @@ const SecondarySkillForm = ({
       </div>
 
       <Modal
-        style={{ width: '450px', fontSize: '20px' }}
+        style={{ width: '510px', fontSize: '20px' }}
         open={deleteConfirmationOpen}
       >
         <Modal.Header>Confirm Delete</Modal.Header>

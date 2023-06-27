@@ -61,7 +61,7 @@ function Adminskillcatalog() {
     )
 
     if (existingSkill) {
-      alert('Skill exists')
+      alert('Skill already exists')
       return
     }
 
